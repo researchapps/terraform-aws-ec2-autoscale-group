@@ -197,6 +197,19 @@ resource "aws_autoscaling_group" "default" {
     }
   }
 
+  dynamic "initial_lifecycle_hook" {
+    for_each = var.initial_lifecycle_hooks
+    content {
+      name                    = initial_lifecycle_hook.value.name
+      default_result          = try(initial_lifecycle_hook.value.default_result, null)
+      heartbeat_timeout       = try(initial_lifecycle_hook.value.heartbeat_timeout, null)
+      lifecycle_transition    = initial_lifecycle_hook.value.lifecycle_transition
+      notification_metadata   = try(initial_lifecycle_hook.value.notification_metadata, null)
+      notification_target_arn = try(initial_lifecycle_hook.value.notification_target_arn, null)
+      role_arn                = try(initial_lifecycle_hook.value.role_arn, null)
+    }
+  }
+
   dynamic "mixed_instances_policy" {
     for_each = (local.mixed_instances_policy != null ?
     [local.mixed_instances_policy] : [])
